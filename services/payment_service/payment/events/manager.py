@@ -85,7 +85,7 @@ class RabbitMQConnectionManager:
             
             # Publish message
             channel.basic_publish(exchange=exchange, routing_key=routing_key, body=json.dumps(message), properties=pika.BasicProperties(delivery_mode=2,))
-            print(f"published event: {routing_key}")    
+            print(f"published event: {routing_key}")
             
             logger.info(f"Successfully published event: {routing_key}")
 
@@ -101,5 +101,3 @@ class RabbitMQConnectionManager:
 
 
 _publisher = RabbitMQConnectionManager()
-
-

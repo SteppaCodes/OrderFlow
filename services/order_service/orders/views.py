@@ -22,9 +22,7 @@ class OrderCreateAPIView(APIView):
                 return Response({'error': 'Product not found'}, status=status.HTTP_404_NOT_FOUND)
             
             product_response = response.json()
-            product = product_response["data"]
-            print(product)
-            
+            product = product_response["data"]            
             quantity = serializer.validated_data["quantity"]
 
             # Check stock
@@ -39,11 +37,28 @@ class OrderCreateAPIView(APIView):
                 quantity=quantity,
                 total_price=total_price
             )
+
+            # Call Payment Service to create payment link
+            try:
+                payment_service_response = requests.post("http://127.0.0.1:8003/api/payment/create-link/")
+                
+                if payment_service_response.status_code != 201:
+                    return Response({'error': 'Payment service error'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+                
+                payment_data = payment_service_response.json()
+                payment_link = payment_data["data"]["link"]
+
+            except requests.RequestException as e:
+                return Response({'error': 'Could not connect to Payment Service'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
             
-            # Publish event
             publish_order_placed(order, product)
+
+            data = {
+                "order": OrderSerializer(order).data,
+                "payment_link": payment_link
+            }
             
-            return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
+            return Response({"status":"success", "message":"Order placed successfully", "data":data}, status=status.HTTP_201_CREATED)
             
         except requests.RequestException as e:
-            return Response({'error': 'Could not connect to Product Service'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+            return Response({'error': f'Could not connect to Product Service: {e}'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)

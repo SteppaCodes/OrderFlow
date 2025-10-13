@@ -1,8 +1,8 @@
 from django.core.management.base import BaseCommand
-from ...events.consumers import start_consuming
+from ...events.consumers.base import start_consuming
 
 class Command(BaseCommand):
-    help = "Start RabbitMQ consumer for order.placed events"
+    help = "Start RabbitMQ consumer for events"
 
     def handle(self, *args, **kwargs):
         start_consuming()
