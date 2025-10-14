@@ -12,7 +12,10 @@ class Order(models.Model):
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user_id = models.UUIDField()
+    buyer_email = models.EmailField(blank=True, null=True)
+    seller_email = models.EmailField(blank=True, null=True)
     product_id = models.UUIDField() 
+    product_name = models.CharField(max_length=200, blank=True, null=True)
     quantity = models.IntegerField()
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')

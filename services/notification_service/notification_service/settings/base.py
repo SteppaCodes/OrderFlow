@@ -62,9 +62,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'notification_service.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -90,6 +87,8 @@ RABBITMQ_HOST = config('RABBITMQ_HOST')
 RABBITMQ_PORT = config('RABBITMQ_PORT')
 RABBITMQ_USER = config('RABBITMQ_USER')
 RABBITMQ_PASSWORD = config('RABBITMQ_PASSWORD')
+RABBITMQ_RETRY_ATTEMPTS = int(config('RABBITMQ_RETRY_ATTEMPTS'))
+RABBITMQ_RETRY_DELAY = int(config('RABBITMQ_RETRY_DELAY'))
 
 JWT_SECRET_KEY=config('JWT_SECRET_KEY')
 SIMPLE_JWT = {

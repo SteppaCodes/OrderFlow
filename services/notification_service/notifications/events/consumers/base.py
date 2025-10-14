@@ -1,7 +1,7 @@
 import pika
 import json
 from django.conf import settings
-from .handlers import handle_payment_successful
+from .handlers import handle_order_confirmed
 
 def callback(ch, method, properties, body):
     message = json.loads(body)
@@ -10,8 +10,8 @@ def callback(ch, method, properties, body):
 
     print(f"Received event: {event}")
 
-    if event == "payment.successful":
-        handle_payment_successful(data)
+    if event == "order.confirmed":
+        handle_order_confirmed(data)
 
     ch.basic_ack(delivery_tag=method.delivery_tag)
 
@@ -23,11 +23,11 @@ def start_consuming():
     channel = connection.channel()
     channel.exchange_declare(exchange="payment", exchange_type="topic", durable=True)
 
-    result = channel.queue_declare(queue="order_service_queue", durable=True)
+    result = channel.queue_declare(queue="notification_service_queue", durable=True)
     queue_name = result.method.queue
-    channel.queue_bind(exchange="payment", queue=queue_name, routing_key="payment.successful")
+    channel.queue_bind(exchange="orders", queue=queue_name, routing_key="order.*")
 
     channel.basic_consume(queue=queue_name, on_message_callback=callback)
-    print('Order Service: Waiting for messages...')
+    print('Notification Service: Waiting for messages...')
     channel.start_consuming()
 

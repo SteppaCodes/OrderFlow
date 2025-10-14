@@ -30,10 +30,14 @@ class OrderCreateAPIView(APIView):
                 return Response({'error': 'Insufficient goods in stock'}, status=status.HTTP_400_BAD_REQUEST)
 
             total_price = float(product['price']) * quantity
+
             
             order = Order.objects.create(
                 user_id=request.user.id,
+                buyer_email = request.user.email,
+                seller_email = product["seller_email"],
                 product_id=product_id,
+                product_name=product['name'],
                 quantity=quantity,
                 total_price=total_price
             )

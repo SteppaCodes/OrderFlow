@@ -6,6 +6,7 @@ def publish_order_placed(order, product):
         'user_id': str(order.user_id),
         'product_id': str(order.product_id),
         'product_name': product['name'],
+        "seller_email": order.seller_email,
         'quantity': order.quantity,
         'total_price': str(order.total_price)
     }
@@ -17,7 +18,11 @@ def publish_order_confirmed(order):
     event_data = {
         "order_id": str(order.id),
         "product_id": str(order.product_id),
-        "quantity": order.quantity
+        "product_name": order.product_name,
+        "seller_email": order.seller_email,
+        "buyer_email": order.buyer_email,
+        "quantity": order.quantity,
+        "total_price": order.total_price
     }
 
     message = {"event":"order.confirmed", "data": event_data}
